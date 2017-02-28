@@ -66,6 +66,12 @@
     <Compile Include="Conexao.Designer.cs">
       <DependentUpon>Conexao.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controller.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controller.Designer.cs">
+      <DependentUpon>Controller.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseConfig.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +118,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Conexao.resx">
       <DependentUpon>Conexao.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controller.resx">
+      <DependentUpon>Controller.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DatabaseConfig.resx">
       <DependentUpon>DatabaseConfig.cs</DependentUpon>
@@ -163,7 +172,10 @@
   <ItemGroup>
     <AdditionalFiles Include="help.html" />
     <Content Include="Images\administrador.png" />
+    <None Include="Images\Ordem.png" />
     <None Include="Images\LRV.png" />
+    <None Include="Images\Desligado.png" />
+    <None Include="Images\Ligado.png" />
     <Content Include="Images\operario.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

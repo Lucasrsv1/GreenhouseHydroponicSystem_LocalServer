@@ -83,6 +83,26 @@ namespace Greenhouse_Hydroponic_System.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Desligado {
+            get {
+                object obj = ResourceManager.GetObject("Desligado", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Ligado {
+            get {
+                object obj = ResourceManager.GetObject("Ligado", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap LRV {
             get {
                 object obj = ResourceManager.GetObject("LRV", resourceCulture);
@@ -96,6 +116,16 @@ namespace Greenhouse_Hydroponic_System.Properties {
         internal static System.Drawing.Bitmap operario {
             get {
                 object obj = ResourceManager.GetObject("operario", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Ordem {
+            get {
+                object obj = ResourceManager.GetObject("Ordem", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

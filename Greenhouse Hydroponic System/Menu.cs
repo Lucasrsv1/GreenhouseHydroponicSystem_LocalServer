@@ -19,7 +19,7 @@ namespace Greenhouse_Hydroponic_System {
 					estatisticas.BackColor = Color.FromArgb(125, 125, 125);
 					locked = 2;
 					break;
-				case "Conexão":
+				case "Conexão com o Arduino":
 					conexao.BackColor = Color.FromArgb(125, 125, 125);
 					locked = 3;
 					break;

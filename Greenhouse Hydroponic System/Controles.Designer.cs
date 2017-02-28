@@ -29,6 +29,7 @@
 			this.menu = new Greenhouse_Hydroponic_System.Menu();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.identidade1 = new Greenhouse_Hydroponic_System.Identidade();
+			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
@@ -39,6 +40,7 @@
 			this.tableLayoutPanel1.ColumnCount = 1;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 0, 1);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
@@ -101,6 +103,15 @@
 			this.identidade1.Size = new System.Drawing.Size(290, 50);
 			this.identidade1.TabIndex = 0;
 			// 
+			// flowLayoutPanel1
+			// 
+			this.flowLayoutPanel1.AutoScroll = true;
+			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 53);
+			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(794, 424);
+			this.flowLayoutPanel1.TabIndex = 1;
+			// 
 			// Controles
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -113,6 +124,7 @@
 			this.Name = "Controles";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Controles";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Controles_FormClosing);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel2.ResumeLayout(false);
 			this.tableLayoutPanel3.ResumeLayout(false);
@@ -127,5 +139,6 @@
 		private Menu menu;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
 		private Identidade identidade1;
+		public System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 	}
 }

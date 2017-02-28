@@ -20,14 +20,37 @@ namespace Greenhouse_Hydroponic_System {
 		public static string offlinePassword = "miVRLKzz666r53Pk";
 
 		public static Login loginIntance;
+		public static Geral geralIntance;
+		public static Estatisticas estatisticasIntance;
+		public static Controles controlesIntance;
+		public static Conexao conexaoIntance;
 		public static MySQLManager online;
 		public static MySQLManager offline;
 
 		private static string[] contasColumns = new string[] { "id", "empresas_id", "usuario", "primeiro_nome", "sobrenome", "tipo", "email", "telefones", "em_uso" };
 		private static string[] empresaColumns = new string[] { "id", "razao_social", "nome", "cnpj", "inscricao_estadual", "endereco", "bairro", "cidade", "estado", "cep", "email", "telefones", "responsavel" };
 
-		public static void Exit (object sender = null, EventArgs e = null) {
-			loginIntance.Close();
+		public static void Exit (object sender = null, FormClosingEventArgs e = null) {
+			DialogResult result = MessageBox.Show("Tem certeza de que deseja fechar a aplicação?\nAtenção: o monitoramento e controle da estufa serão suspendidos.", "Sair?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if (result == DialogResult.Yes) {
+				controlesIntance.updating = false;
+
+				geralIntance.FormClosing -= Exit;
+				geralIntance.Close();
+
+				estatisticasIntance.FormClosing -= Exit;
+				estatisticasIntance.Close();
+
+				conexaoIntance.FormClosing -= Exit;
+				conexaoIntance.Close();
+
+				controlesIntance.FormClosing -= Exit;
+				controlesIntance.Close();
+				
+				loginIntance.Close();
+			} else {
+				e.Cancel = true;
+			}
 		}
 
 		public static void ResetMessageBoxButtons () {
@@ -43,19 +66,39 @@ namespace Greenhouse_Hydroponic_System {
 		}
 
 		public static void LoadForm (Forms load, Form close = null) {
+			if (loginIntance.Visible) {
+				loginIntance.Hide();
+
+				geralIntance = new Geral();
+				geralIntance.Hide();
+				geralIntance.FormClosing += Exit;
+
+				estatisticasIntance = new Estatisticas();
+				estatisticasIntance.Hide();
+				estatisticasIntance.FormClosing += Exit;
+
+				controlesIntance = new Controles();
+				controlesIntance.Hide();
+				controlesIntance.FormClosing += Exit;
+
+				conexaoIntance = new Conexao();
+				conexaoIntance.Hide();
+				conexaoIntance.FormClosing += Exit;
+			}
+
 			Form form;
 			switch (load) {
 				case Forms.Geral:
-					form = new Geral();
+					form = geralIntance;
 					break;
 				case Forms.Controles:
-					form = new Controles();
+					form = controlesIntance;
 					break;
 				case Forms.Estatisticas:
-					form = new Estatisticas();
+					form = estatisticasIntance;
 					break;
 				case Forms.Conexao:
-					form = new Conexao();
+					form = conexaoIntance;
 					break;
 				default:
 					return;
@@ -65,20 +108,21 @@ namespace Greenhouse_Hydroponic_System {
 				if (close.WindowState != FormWindowState.Maximized) {
 					form.Location = close.Location;
 					form.Size = close.Size;
+					form.WindowState = FormWindowState.Normal;
 				} else {
 					form.WindowState = FormWindowState.Maximized;
 				}
-
-				close.FormClosed -= Exit;
-				close.Close();
-			} else if (loginIntance.Visible) {
+			} else {
 				form.Location = loginIntance.Location;
 				form.Size = loginIntance.Size;
-				loginIntance.Hide();
 			}
 
 			form.Show();
-			form.FormClosed += Exit;
+			if (close != null)
+				close.Hide();
+
+			if (load == Forms.Controles)
+				controlesIntance.Controles_Shown();
 		}
 
 		public static void DatabaseStructureError (string title) {

@@ -83,7 +83,7 @@
 			this.conexao.Name = "conexao";
 			this.conexao.Size = new System.Drawing.Size(120, 50);
 			this.conexao.TabIndex = 3;
-			this.conexao.Text = "Conexão";
+			this.conexao.Text = "Arduino";
 			this.conexao.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.conexao.Click += new System.EventHandler(this.conexao_Click);
 			this.conexao.MouseEnter += new System.EventHandler(this.BtnMouseEnter);
