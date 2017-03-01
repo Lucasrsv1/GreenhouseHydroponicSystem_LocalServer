@@ -1,4 +1,15 @@
-﻿using LRV_Utilities.DBMS;
+﻿/*
+ * Created by Lucas Rassilan Vilanova;
+ * This software works only with Arduinos that have the Greenhouse_Hydroponic_System_Lowest_Level sketch.
+ * Also, this software needs a server running on this computer and connection to local hidroponia database and
+ * hidroponia_online database from the online server. Don't forget to set the credentials below.
+ * 
+ * This Form start the connections with the databases and check user credentials, computer and plan validation.
+ * Then, it copys the company's plan, company's informations and accounts informations to the local server database.
+ * 
+ */
+
+using LRV_Utilities.DBMS;
 using LRV_Utilities.Cryptography;
 using System;
 using System.Collections.Generic;
@@ -16,8 +27,14 @@ namespace Greenhouse_Hydroponic_System {
 		public static readonly string saltKey = "0eJMBHj#aoulºlrvKO$Aw5¢m£mm#I%rd&?U/qV9]F/jgB{[Mt/a{ws}9lRvC0+v;r";
 		public static readonly string viKey = "2g£7.C$#B5f|eEml";
 
+		// Credentials to local server
 		public static string offlineUser = "greenhouse";
 		public static string offlinePassword = "miVRLKzz666r53Pk";
+
+		// Credentials to online server
+		public static string onlineUser = "greenhouse";
+		public static string onlinePassword = "miVRLKzz666r53Pk";
+		public static string onlineServer = "localhost";
 
 		public static Login loginIntance;
 		public static Geral geralIntance;
@@ -33,6 +50,9 @@ namespace Greenhouse_Hydroponic_System {
 		public static void Exit (object sender = null, FormClosingEventArgs e = null) {
 			DialogResult result = MessageBox.Show("Tem certeza de que deseja fechar a aplicação?\nAtenção: o monitoramento e controle da estufa serão suspendidos.", "Sair?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 			if (result == DialogResult.Yes) {
+				if (conexaoIntance.Connected)
+					conexaoIntance.SendMessage(126, 0, 0, 0);
+
 				controlesIntance.updating = false;
 
 				geralIntance.FormClosing -= Exit;
@@ -286,7 +306,7 @@ namespace Greenhouse_Hydroponic_System {
 
 		private void Connect () {
 			//Online:
-			online = new MySQLManager("hidroponia_online", "greenhouse", "miVRLKzz666r53Pk");
+			online = new MySQLManager("hidroponia_online", onlineUser, onlinePassword, onlineServer);
 			if (!online.Connected) {
 				DialogResult result = MessageBox.Show("Não foi possível criar a conexão com a nossa base de dados para realizar o login.", "Não conectado", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
 				if (result == DialogResult.Retry)

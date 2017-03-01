@@ -1,8 +1,13 @@
 ﻿/* 
+ * Created by Lucas Rassilan Vilanova;
+ * This Form starts connection with Arduino, auto detect the board and allow the user to configure the connection.
+ * Also, all communication is done by this Form using the communication protocol documented next.
+ * 
  * Comms Protocol:
  * Este protocolo utiliza um conjunto de 6 bytes;
  * Byte 0: identifica o início de um novo comando e é uma constante definida como Convert.ToByte(16);
  * Byte 1: identifica o comando,
+ *  + 126: suspende a atividade da placa,
  *  + 127: solicita um handshake para confirmar a identidade da placa,
  *  + 128: envia as informações do plano da empresa,
  *  + 129: inicializa um controle,
@@ -11,35 +16,57 @@
  *  + 132: altera um controle,
  *  + 133: solicita a atualização de todos os controles,
  *  + 134: solicita a atualização de todas as estatísticas;
- * Byte 2: primeiro parâmetro (ignorado nos comandos 127, 133 e 134),
+ * Byte 2: primeiro parâmetro (ignorado nos comandos 126, 133 e 134),
+ *  + 127: primeiro número da requisição de confirmação de identidade da placa
  *  + 128: quantidade de estatísticas do plano,
  *  + 129: identifica o pino do Arduino,
  *  + 130: identifica o pino do Arduino,
  *  + 131: identifica o pino do Arduino,
  *  + 132: identifica o pino do Arduino;
- * Byte 3: segundo parâmetro (ignorado nos comandos 127, 133 e 134),
+ * Byte 3: segundo parâmetro (ignorado nos comandos 126, 127, 133 e 134),
+ *  + 127: segundo número da requisição de confirmação de identidade da placa
  *  + 128: quantidade de controles do plano,
  *  + 129: estado do controle,
  *  + 130: tipo de leitura da estatística,
  *  + 131: id da ordem,
  *  + 132: estado do controle;
- * Byte 4: terceiro parâmetro (ignorado nos comandos 127, 128, 129, 130, 132, 133 e 134),
+ * Byte 4: terceiro parâmetro (ignorado nos comandos 126, 127, 128, 129, 130, 132, 133 e 134),
+ *  + 127: terceiro número da requisição de confirmação de identidade da placa
  *  + 131: estado do controle;
- * Byte 5: identifica o fim do comando, mas é redundante;
+ * Byte 5: identifica o fim do comando, mas é redundante.
  * 
  */
 
 using System;
 using System.Drawing;
 using System.IO.Ports;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Greenhouse_Hydroponic_System {
 	public partial class Conexao : Form {
+		public static int Checksum (int[] input) {
+			byte[] inputBytes = new byte[input.Length];
+			for (int i = 0; i < input.Length; i++)
+				inputBytes[i] = Convert.ToByte(input[i]);
+
+			return Checksum(inputBytes);
+		}
+
+		public static int Checksum (byte[] input) {
+			int checksum = 0;
+			for (int i = 0; i < 3; i++)
+				checksum += input[i];
+
+			checksum &= 0xFF;
+			return checksum;
+		}
+
 		public Conexao () {
 			InitializeComponent();
 			menu.SetParent(this);
 
+			random = new Random();
 			Connected = false;
 			BaudRate = 9600;
 			PortName = "-";
@@ -48,9 +75,31 @@ namespace Greenhouse_Hydroponic_System {
 			LastCommand = "-";
 		}
 
-		public void SendMessage () {
+		public bool SendMessage (int cmd, int param0, int param1, int param2) {
 			// Send message to Arduino using the Comms Protocol
+			byte[] message = new byte[6];
+			try {
+				switch (cmd) {
+					case 127:
+						LastCommand = "handshake request";
+						break;
+				}
+
+				message[0] = Convert.ToByte(16);
+				message[1] = Convert.ToByte(cmd);
+				message[2] = Convert.ToByte(param0);
+				message[3] = Convert.ToByte(param1);
+				message[4] = Convert.ToByte(param2);
+				message[5] = Convert.ToByte(4);
+
+				serialPort.Write(message, 0, 6);
+				return true;
+			} catch {
+				return false;
+			}
 		}
+
+		private Random random;
 
 		public bool Connected { get; private set;}
 		public int BaudRate { get; private set; }
@@ -66,7 +115,34 @@ namespace Greenhouse_Hydroponic_System {
 		}
 
 		private bool DetectArduino () {
-			return false;
+			int[] paramArray = new int[3];
+			for (int i = 0; i < 3; i++)
+				paramArray[i] = random.Next(0, 256);
+
+			if (SendMessage(127, paramArray[0], paramArray[1], paramArray[2])) {
+				Thread.Sleep(1000);
+				int returnASCII;
+				int checksum = Checksum(paramArray);
+				string returnMessage = "";
+				for (int toRead = serialPort.BytesToRead; toRead > 0; toRead--) {
+					returnASCII = serialPort.ReadByte();
+					returnMessage += Convert.ToChar(returnASCII);
+				}
+
+				string rightAnswer = "Hello from Arduino running Greenhouse_Hydroponic_System_Lowest_Level [" + checksum.ToString() + "]";
+				Console.WriteLine(rightAnswer);
+				if (returnMessage.Contains(rightAnswer)) {
+					LastRead = "handshake from Arduino";
+					return true;
+				} else if (returnMessage.Length > 0) {
+					LastRead = returnMessage;
+					return false;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
 
 		private void AutoIdentifyArduino () {
@@ -79,6 +155,9 @@ namespace Greenhouse_Hydroponic_System {
 					baud = 9600;
 
 				if (serialPort.IsOpen) {
+					if (Connected)
+						SendMessage(126, 0, 0, 0);
+
 					try {
 						serialPort.Close();
 					} catch { }
@@ -127,6 +206,9 @@ namespace Greenhouse_Hydroponic_System {
 			}
 
 			if (serialPort.IsOpen) {
+				if (Connected)
+					SendMessage(126, 0, 0, 0);
+
 				try {
 					serialPort.Close();
 				} catch { }
