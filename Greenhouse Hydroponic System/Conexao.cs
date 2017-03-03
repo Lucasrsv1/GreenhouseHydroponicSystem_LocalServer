@@ -93,7 +93,6 @@ namespace Greenhouse_Hydroponic_System {
 				message[3] = Convert.ToByte(param1);
 				message[4] = Convert.ToByte(param2);
 				message[5] = Convert.ToByte(Checksum(message));
-				Console.WriteLine("C: " + message[5]);
 				serialPort.Write(message, 0, 6);
 				return true;
 			} catch {
@@ -113,7 +112,6 @@ namespace Greenhouse_Hydroponic_System {
 
 		private void UpdateConfigInfo () {
 			string status = (Connected) ? "CONECTADO" : "DESCONECTADO";
-			Console.WriteLine("Estado: " + status + "\nPorta: " + PortName + "\nTaxa de Transmissão: " + BaudRate.ToString() + "\nArduino Leonardo: " + IsLeonardo + "\nLeitura Mais Recente: " + LastRead + "\nComando Mais Recente: " + LastCommand);
 			currentConfig.Text = "Estado: " + status + "\nPorta: " + PortName + "\nTaxa de Transmissão: " + BaudRate.ToString() + "\nArduino Leonardo: " + IsLeonardo + "\nLeitura Mais Recente: " + LastRead + "\nComando Mais Recente: " + LastCommand;
 		}
 
@@ -132,7 +130,7 @@ namespace Greenhouse_Hydroponic_System {
 					returnMessage += Convert.ToChar(returnASCII);
 				}
 
-				string rightAnswer = "Hello from Arduino running Greenhouse_Hydroponic_System_Lowest_Level [" + checksum.ToString() + "]";
+				string rightAnswer = "Hello from Arduino running Greenhouse_Hydroponic_System_Lowest_Layer [" + checksum.ToString() + "]";
 				if (returnMessage.Contains(rightAnswer)) {
 					LastRead = "handshake from Arduino";
 					handshake = checksum;
