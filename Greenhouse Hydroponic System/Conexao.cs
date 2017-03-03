@@ -33,7 +33,7 @@
  * Byte 4: terceiro parâmetro (ignorado nos comandos 126, 127, 128, 129, 130, 132, 133 e 134),
  *  + 127: terceiro número da requisição de confirmação de identidade da placa
  *  + 131: estado do controle;
- * Byte 5: identifica o fim do comando, mas é redundante.
+ * Byte 5: identifica o fim do comando e o valida pela confirmação de checksum.
  * 
  */
 
@@ -68,6 +68,7 @@ namespace Greenhouse_Hydroponic_System {
 
 			random = new Random();
 			Connected = false;
+			handshake = 0;
 			BaudRate = 9600;
 			PortName = "-";
 			IsLeonardo = "NÃO";
@@ -77,7 +78,9 @@ namespace Greenhouse_Hydroponic_System {
 
 		public bool SendMessage (int cmd, int param0, int param1, int param2) {
 			// Send message to Arduino using the Comms Protocol
-			byte[] message = new byte[6];
+			byte[] message = new byte[6] { 16, 0, 0, 0, 0, 0 };
+			message[5] = Convert.ToByte(handshake);
+
 			try {
 				switch (cmd) {
 					case 127:
@@ -85,13 +88,12 @@ namespace Greenhouse_Hydroponic_System {
 						break;
 				}
 
-				message[0] = Convert.ToByte(16);
 				message[1] = Convert.ToByte(cmd);
 				message[2] = Convert.ToByte(param0);
 				message[3] = Convert.ToByte(param1);
 				message[4] = Convert.ToByte(param2);
-				message[5] = Convert.ToByte(4);
-
+				message[5] = Convert.ToByte(Checksum(message));
+				Console.WriteLine("C: " + message[5]);
 				serialPort.Write(message, 0, 6);
 				return true;
 			} catch {
@@ -99,9 +101,10 @@ namespace Greenhouse_Hydroponic_System {
 			}
 		}
 
+		private int handshake;
 		private Random random;
 
-		public bool Connected { get; private set;}
+		public bool Connected { get; private set; }
 		public int BaudRate { get; private set; }
 		public string PortName { get; private set; }
 		public string IsLeonardo { get; private set; }
@@ -130,9 +133,9 @@ namespace Greenhouse_Hydroponic_System {
 				}
 
 				string rightAnswer = "Hello from Arduino running Greenhouse_Hydroponic_System_Lowest_Level [" + checksum.ToString() + "]";
-				Console.WriteLine(rightAnswer);
 				if (returnMessage.Contains(rightAnswer)) {
 					LastRead = "handshake from Arduino";
+					handshake = checksum;
 					return true;
 				} else if (returnMessage.Length > 0) {
 					LastRead = returnMessage;
@@ -169,6 +172,7 @@ namespace Greenhouse_Hydroponic_System {
 				serialPort.RtsEnable = isLeonardo;
 
 				Connected = false;
+				handshake = 0;
 				BaudRate = baud;
 				PortName = port;
 				IsLeonardo = (isLeonardo) ? "SIM" : "NÃO";
@@ -177,6 +181,11 @@ namespace Greenhouse_Hydroponic_System {
 				try {
 					serialPort.Open();
 					Connected = DetectArduino();
+					if (!Connected) {
+						handshake = 0;
+						SendMessage(128, Geral.EstatisticasPlano(), Geral.ControlesPlano(), 0);
+					}
+
 					UpdateConfigInfo();
 				} catch { }
 			}
@@ -220,6 +229,7 @@ namespace Greenhouse_Hydroponic_System {
 			serialPort.RtsEnable = isLeonardo;
 
 			Connected = false;
+			handshake = 0;
 			BaudRate = baud;
 			PortName = com;
 			IsLeonardo = (isLeonardo) ? "SIM" : "NÃO";
@@ -229,8 +239,10 @@ namespace Greenhouse_Hydroponic_System {
 				serialPort.Open();
 				if (DetectArduino()) {
 					Connected = true;
+					SendMessage(128, Geral.EstatisticasPlano(), Geral.ControlesPlano(), 0);
 				} else {
 					Connected = false;
+					handshake = 0;
 					MessageBox.Show("Arduino não identificado nesta porta serial! Verifique as configurações informadas.", "Erro ao salvar", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 

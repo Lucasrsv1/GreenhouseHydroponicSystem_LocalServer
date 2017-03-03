@@ -22,6 +22,18 @@ namespace Greenhouse_Hydroponic_System {
 		public static string[] empresa;
 		public static string[] plano;
 
+		public static int EstatisticasPlano () {
+			int total;
+			int.TryParse(plano[3], out total);
+			return total;
+		}
+
+		public static int ControlesPlano () {
+			int total;
+			int.TryParse(plano[4], out total);
+			return total;
+		}
+
 		private string DateFormat (string datetime) {
 			return datetime.Substring(0, 10);
 		}
