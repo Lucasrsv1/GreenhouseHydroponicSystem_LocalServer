@@ -134,26 +134,28 @@ namespace Greenhouse_Hydroponic_System {
 		public bool updating;
 		public ControlesDelegate myDelegate;
 		public delegate void ControlesDelegate (Controller ctrl);
-		
+
 		public void AddController (Controller ctrl) {
 			flowLayoutPanel1.Controls.Add(ctrl);
 		}
 
 		private void UpdateControllers () {
 			while (updating) {
-				// Get new controllers
-				Login.offline.Select("SELECT rele_pin, rele_nome, estado FROM reles WHERE em_uso ORDER BY rele_nome ASC");
-				foreach (string[] onRow in Login.offline.SelectResult.Skip(1)) {
-					var exists = (from c in controllers
-								  where c.Rele_Pin.ToString() == onRow[0]
-								  select c).Count() > 0;
+				if (controllers.Count < Geral.ControlesPlano()) { // Check plan limit to avoid making new SQL reuqest
+																  // Get new controllers
+					Login.offline.Select("SELECT rele_pin, rele_nome, estado FROM reles WHERE em_uso ORDER BY rele_nome ASC");
+					foreach (string[] onRow in Login.offline.SelectResult.Skip(1)) {
+						var exists = (from c in controllers
+									  where c.Rele_Pin.ToString() == onRow[0]
+									  select c).Count() > 0;
 
-					if (!exists) {
-						Console.WriteLine("Init >> " + onRow[1]);
-						int rele_pin;
-						int.TryParse(onRow[0], out rele_pin);
-						Status status = (onRow[2] == "False" || onRow[2] == "0") ? Status.Desligado : Status.Ligado;
-						controllers.Add(new Ctrl(rele_pin, onRow[1], status, this));
+						if (!exists && controllers.Count < Geral.ControlesPlano()) { // Check plan for all new controllers
+							Console.WriteLine("Init >> " + onRow[1]);
+							int rele_pin;
+							int.TryParse(onRow[0], out rele_pin);
+							Status status = (onRow[2] == "False" || onRow[2] == "0") ? Status.Desligado : Status.Ligado;
+							controllers.Add(new Ctrl(rele_pin, onRow[1], status, this));
+						}
 					}
 				}
 
