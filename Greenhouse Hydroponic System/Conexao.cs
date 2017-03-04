@@ -55,7 +55,7 @@ namespace Greenhouse_Hydroponic_System {
 
 		public static int Checksum (byte[] input) {
 			int checksum = 0;
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < input.Length; i++)
 				checksum += input[i];
 
 			checksum &= 0xFF;
