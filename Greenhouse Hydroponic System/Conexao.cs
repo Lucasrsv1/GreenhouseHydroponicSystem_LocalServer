@@ -21,14 +21,14 @@
  *  + 128: quantidade de estatísticas do plano,
  *  + 129: identifica o pino do Arduino,
  *  + 130: identifica o pino do Arduino,
- *  + 131: identifica o pino do Arduino,
+ *  + 131: id da ordem,
  *  + 132: identifica o pino do Arduino;
  * Byte 3: segundo parâmetro (ignorado nos comandos 126, 127, 133 e 134),
  *  + 127: segundo número da requisição de confirmação de identidade da placa
  *  + 128: quantidade de controles do plano,
  *  + 129: estado do controle,
  *  + 130: tipo de leitura da estatística,
- *  + 131: id da ordem,
+ *  + 131: identifica o pino do Arduino,
  *  + 132: estado do controle;
  * Byte 4: terceiro parâmetro (ignorado nos comandos 126, 127, 128, 129, 130, 132, 133 e 134),
  *  + 127: terceiro número da requisição de confirmação de identidade da placa
@@ -82,9 +82,19 @@ namespace Greenhouse_Hydroponic_System {
 			message[5] = Convert.ToByte(handshake);
 
 			try {
+				// Before sending
 				switch (cmd) {
 					case 127:
 						LastCommand = "handshake request";
+						break;
+					case 128:
+						LastCommand = "send plan information";
+						break;
+					case 129:
+						LastCommand = "create controller pin " + param0 + (param1 == 1 ? " ON" : " OFF");
+						break;
+					case 131:
+						LastCommand = "send order to set pin " + param1 + (param2 == 1 ? " ON" : " OFF");
 						break;
 				}
 
@@ -93,7 +103,22 @@ namespace Greenhouse_Hydroponic_System {
 				message[3] = Convert.ToByte(param1);
 				message[4] = Convert.ToByte(param2);
 				message[5] = Convert.ToByte(Checksum(message));
+				//Console.WriteLine("Send: " + message[0] + ", " + message[1] + ", " + message[2] + ", " + message[3] + ", " + message[4] + ", " + message[5] + " [OK]");
 				serialPort.Write(message, 0, 6);
+
+				// After sent
+				switch (cmd) {
+					case 126:
+						LastCommand = "Arduino shutdown";
+						Login.controlesIntance.SuspendArduino();
+						break;
+				}
+
+				if (InvokeRequired)
+					Invoke(new Action(UpdateConfigInfo));
+				else
+					UpdateConfigInfo();
+
 				return true;
 			} catch {
 				return false;
@@ -174,17 +199,24 @@ namespace Greenhouse_Hydroponic_System {
 				BaudRate = baud;
 				PortName = port;
 				IsLeonardo = (isLeonardo) ? "SIM" : "NÃO";
-				UpdateConfigInfo();
+
+				if (InvokeRequired)
+					Invoke(new Action(UpdateConfigInfo));
+				else
+					UpdateConfigInfo();
 
 				try {
 					serialPort.Open();
 					Connected = DetectArduino();
-					if (!Connected) {
-						handshake = 0;
+					if (Connected)
 						SendMessage(128, Geral.EstatisticasPlano(), Geral.ControlesPlano(), 0);
-					}
+					else
+						handshake = 0;
 
-					UpdateConfigInfo();
+					if (InvokeRequired)
+						Invoke(new Action(UpdateConfigInfo));
+					else
+						UpdateConfigInfo();
 				} catch { }
 			}
 
@@ -231,7 +263,11 @@ namespace Greenhouse_Hydroponic_System {
 			BaudRate = baud;
 			PortName = com;
 			IsLeonardo = (isLeonardo) ? "SIM" : "NÃO";
-			UpdateConfigInfo();
+
+			if (InvokeRequired)
+				Invoke(new Action(UpdateConfigInfo));
+			else
+				UpdateConfigInfo();
 
 			try {
 				serialPort.Open();
@@ -244,7 +280,10 @@ namespace Greenhouse_Hydroponic_System {
 					MessageBox.Show("Arduino não identificado nesta porta serial! Verifique as configurações informadas.", "Erro ao salvar", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 
-				UpdateConfigInfo();
+				if (InvokeRequired)
+					Invoke(new Action(UpdateConfigInfo));
+				else
+					UpdateConfigInfo();
 			} catch {
 				MessageBox.Show("Erro ao conectar a esta porta serial! Verifique as configurações informadas.", "Erro ao salvar", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
@@ -252,6 +291,40 @@ namespace Greenhouse_Hydroponic_System {
 
 		private void auto_Click (object sender, EventArgs e) {
 			AutoIdentifyArduino();
+		}
+
+		private void serialPort_DataReceived (object sender, SerialDataReceivedEventArgs e) {
+			if (Connected) {
+				string answer = serialPort.ReadLine().Replace(serialPort.NewLine, "").Replace("\r", "");
+				LastRead = answer;
+				Console.WriteLine(answer + " [OK]");
+
+				if (answer.Contains("initialized")) {
+					int pin;
+					int.TryParse(answer.Substring(19, answer.Substring(19).IndexOf(" ")), out pin);
+
+					foreach (Ctrl controller in Login.controlesIntance.controllers) {
+						if (controller.Rele_Pin == pin) {
+							controller.Started = true;
+							break;
+						}
+					};
+				} else if (answer.Contains("executed")) {
+					int id;
+					int.TryParse(answer.Substring(6, answer.Substring(6).IndexOf(":")), out id);
+
+					foreach (Order order in Login.controlesIntance.orders) {
+						if (order.Id == id) {
+							order.Executed();
+							break;
+						}
+					};
+				}
+				if (InvokeRequired)
+					Invoke(new Action(UpdateConfigInfo));
+				else
+					UpdateConfigInfo();
+			}
 		}
 	}
 }

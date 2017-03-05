@@ -3,7 +3,7 @@ using Greenhouse_Hydroponic_System.Properties;
 using System.Windows.Forms;
 
 namespace Greenhouse_Hydroponic_System {
-	public enum Status { Ligado, Desligado, Ordem }
+	public enum Status { Desligado, Ligado, Ordem }
 
 	public partial class Controller : UserControl {
 		public Controller () {

@@ -39,6 +39,7 @@ namespace Greenhouse_Hydroponic_System {
 		}
 
 		private void help_LinkClicked (object sender, LinkLabelLinkClickedEventArgs e) {
+			help.LinkVisited = true;
 			Process.Start(e.Link.LinkData.ToString());
 		}
 	}

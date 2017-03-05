@@ -27,7 +27,9 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Conexao));
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+			this.menu = new Greenhouse_Hydroponic_System.Menu();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+			this.identidade1 = new Greenhouse_Hydroponic_System.Identidade();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.auto = new System.Windows.Forms.Button();
 			this.salvar = new System.Windows.Forms.Button();
@@ -43,8 +45,6 @@
 			this.separator1 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.serialPort = new System.IO.Ports.SerialPort(this.components);
-			this.menu = new Greenhouse_Hydroponic_System.Menu();
-			this.identidade1 = new Greenhouse_Hydroponic_System.Identidade();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.tableLayoutPanel2.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
@@ -85,6 +85,16 @@
 			this.tableLayoutPanel2.Size = new System.Drawing.Size(800, 50);
 			this.tableLayoutPanel2.TabIndex = 0;
 			// 
+			// menu
+			// 
+			this.menu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+			this.menu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+			this.menu.Location = new System.Drawing.Point(0, 0);
+			this.menu.Margin = new System.Windows.Forms.Padding(0);
+			this.menu.Name = "menu";
+			this.menu.Size = new System.Drawing.Size(488, 50);
+			this.menu.TabIndex = 0;
+			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 1;
@@ -99,6 +109,16 @@
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(312, 50);
 			this.tableLayoutPanel3.TabIndex = 1;
+			// 
+			// identidade1
+			// 
+			this.identidade1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+			this.identidade1.Location = new System.Drawing.Point(22, 0);
+			this.identidade1.Margin = new System.Windows.Forms.Padding(0);
+			this.identidade1.Name = "identidade1";
+			this.identidade1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.identidade1.Size = new System.Drawing.Size(290, 50);
+			this.identidade1.TabIndex = 0;
 			// 
 			// panel1
 			// 
@@ -288,25 +308,9 @@
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Atual conexão com a placa Arduino";
 			// 
-			// menu
+			// serialPort
 			// 
-			this.menu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-			this.menu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-			this.menu.Location = new System.Drawing.Point(0, 0);
-			this.menu.Margin = new System.Windows.Forms.Padding(0);
-			this.menu.Name = "menu";
-			this.menu.Size = new System.Drawing.Size(488, 50);
-			this.menu.TabIndex = 0;
-			// 
-			// identidade1
-			// 
-			this.identidade1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
-			this.identidade1.Location = new System.Drawing.Point(22, 0);
-			this.identidade1.Margin = new System.Windows.Forms.Padding(0);
-			this.identidade1.Name = "identidade1";
-			this.identidade1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-			this.identidade1.Size = new System.Drawing.Size(290, 50);
-			this.identidade1.TabIndex = 0;
+			this.serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort_DataReceived);
 			// 
 			// Conexao
 			// 
