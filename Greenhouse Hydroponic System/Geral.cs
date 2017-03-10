@@ -23,15 +23,31 @@ namespace Greenhouse_Hydroponic_System {
 		public static string[] plano;
 
 		public static int EstatisticasPlano () {
-			int total;
-			int.TryParse(plano[3], out total);
+			int total = -1;
+			if (plano.Length > 3)
+				int.TryParse(plano[3], out total);
 			return total;
 		}
 
 		public static int ControlesPlano () {
-			int total;
-			int.TryParse(plano[4], out total);
+			int total = -1;
+			if (plano.Length > 4)
+				int.TryParse(plano[4], out total);
 			return total;
+		}
+
+		public static int EmpresaId () {
+			int id = -1;
+			if (empresa.Length > 0)
+				int.TryParse(empresa[0], out id);
+			return id;
+		}
+
+		public static int ContaId () {
+			int id = -1;
+			if (conta.Length > 0)
+				int.TryParse(conta[0], out id);
+			return id;
 		}
 
 		private string DateFormat (string datetime) {

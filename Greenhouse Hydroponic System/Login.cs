@@ -324,7 +324,7 @@ namespace Greenhouse_Hydroponic_System {
 				if (result == DialogResult.Retry) {
 					goto ConnectOffline;
 				} else if (result == DialogResult.Ignore) {
-					Form setConnection = new DatabaseConfig(); //Change!
+					Form setConnection = new DatabaseConfig();
 					setConnection.ShowDialog();
 					goto ConnectOffline;
 				} else {

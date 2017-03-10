@@ -3,15 +3,15 @@ using System.Threading;
 
 namespace Greenhouse_Hydroponic_System {
 	public class Ctrl {
-		public Ctrl (int rele_pin, string title, Status status, Controles form, bool started) {
+		public Ctrl (int rele_id, int rele_pin, string title, Status status, Controles form, bool started) {
 			this.title = title;
 			this.status = status;
 			parent = form;
 
 			Rele_Pin = rele_pin;
 			Started = started;
-			Design = new Controller();
-			Ordens = new List<int>();
+			Design = new Controller(rele_id);
+			Ordem_Id = -1;
 			Title = title;
 			Status = status;
 
@@ -20,7 +20,7 @@ namespace Greenhouse_Hydroponic_System {
 
 		public int Rele_Pin { get; set; }
 		public bool Started { get; set; }
-		public List<int> Ordens { get; private set; }
+		public int Ordem_Id { get; private set; }
 		public Controller Design { get; set; }
 
 		public string Title {
@@ -39,7 +39,7 @@ namespace Greenhouse_Hydroponic_System {
 			}
 			set {
 				status = value;
-				if (Ordens.Count == 0)
+				if (Ordem_Id <= 0)
 					Design.SetStatus(value);
 			}
 		}
@@ -61,11 +61,15 @@ namespace Greenhouse_Hydroponic_System {
 		}
 
 		public void AddToOrder (int order_id) {
-			Ordens.Add(order_id);
+			Ordem_Id = order_id;
 		}
 
-		public void RemoveFromOrder (int order_id) {
-			Ordens.Remove(order_id);
+		public void RemoveFromOrder () {
+			Ordem_Id = -1;
+		}
+
+		public void SetOrdemId (int id) {
+			Design.SetOrdemId(id);
 		}
 
 		public void UpdateDesign (Status newStatus) {

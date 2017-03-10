@@ -38,7 +38,7 @@
     </Reference>
     <Reference Include="DBMS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Source\Repos\LRV_MySQLManager\LRV_MySQLManager\MySQLManager\bin\Debug\DBMS.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Source\Repos\LRV_MySQLManager\LRV_MySQLManager\MySQLManager\bin\Release\DBMS.dll</HintPath>
     </Reference>
     <Reference Include="MessageBoxManager">
       <HintPath>..\..\MessageBoxManager\bin\Release\MessageBoxManager.dll</HintPath>

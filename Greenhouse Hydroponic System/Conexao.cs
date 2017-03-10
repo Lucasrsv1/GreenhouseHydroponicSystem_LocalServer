@@ -314,12 +314,13 @@ namespace Greenhouse_Hydroponic_System {
 					int.TryParse(answer.Substring(6, answer.Substring(6).IndexOf(":")), out id);
 
 					foreach (Order order in Login.controlesIntance.orders) {
-						if (order.Id == id) {
+						if (order.Local_Id == id) {
 							order.Executed();
 							break;
 						}
 					};
 				}
+
 				if (InvokeRequired)
 					Invoke(new Action(UpdateConfigInfo));
 				else
